@@ -1,0 +1,58 @@
+void VMCUpdateAllWithIons::dorotateshift(PosType& origin, PosType &second, RealType &getpsi )
+{
+  PosType neworigin, newsec,displ,testsec;
+  neworigin = origin-origin;
+  newsec = origin - origin;  //zero out newsec
+  displ = second - origin;
+  RealType odist= std::sqrt(displ[0]*displ[0]+displ[1]*displ[1]+displ[2]*displ[2]);
+  newsec[2] = odist;  //align sec along z direction 
+  //Now we have two new positions of ions neworigin and new sec
+/*
+  RealType rot1 = std::atan(displ[0]/displ[2]);
+  RealType rot2 = std::atan(displ[1]/(std::sin(rot1)*displ[0]+std::cos(rot1)*displ[2]));
+  RealType rangle;
+  PosType  newpos = displ;
+  rangle = rot1;
+ cout << "before newpos " << newpos << endl; 
+ testsec[0]  = std::cos(rangle)*newpos[0]-std::sin(rangle)*newpos[2];
+ testsec[1]  = newpos[1];
+ testsec[2]  = std::sin(rangle)*newpos[0]+std::cos(rangle)*newpos[2];
+ 
+ cout << "testsec " << testsec << endl; 
+ 
+  rangle = rot2;
+ newpos[0] = testsec[0];
+ newpos[1] = testsec[1];
+ newpos[2] = testsec[2];
+
+ testsec[0]  = newpos[0];
+ testsec[1]  = std::cos(rangle)*newpos[1]-std::sin(rangle)*newpos[2];
+ testsec[2]  = std::sin(rangle)*newpos[1]+std::cos(rangle)*newpos[2];
+
+ cout << "finalsec " << testsec << endl; 
+ cout << "and compare " << newsec << endl;
+*/
+ ///Rotate electrons
+   W.makeShiftRotate(deltaR,origin,second);
+   VMCIons.R[ion_index[0]] = neworigin;
+   VMCIons.R[ion_index[1]] = newsec;
+   VMCIons.update();
+   H.update_source(VMCIons);
+   W.update();
+  
+ ///Calculate wavefunction
+   RealType logpsi(Psi.evaluateLog(W));
+ //   cout << "my psi middle " <<logpsi << endl;
+   getpsi = logpsi;  
+  
+ ///Rotate back electrons
+   W.invmakeShiftRotate(deltaR,origin,second);
+ ///Put back initial ion 
+   VMCIons.R[ion_index[0]] = origin;
+   VMCIons.R[ion_index[1]] = second;
+   VMCIons.update();
+   H.update_source(VMCIons);
+   W.update();
+ ///
+ return ;
+}

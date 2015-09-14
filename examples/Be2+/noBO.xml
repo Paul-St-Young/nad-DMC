@@ -1,0 +1,42 @@
+<simulation>
+
+	<project id="Be2+" series="1">
+		<application name="qmcapp" role="molecu" class="serial" version="0.2">
+		Be2+ GAMESS to QMC calculation
+		</application>
+		<host>Kylin</host>
+		<date>Tue Jul 14 19:00:17 CDT 2015</date>
+		<user>Paul Young</user>
+	</project>
+	
+	<random parallel="true" seed="-1"/>
+	
+	<include href="Be2+_ptcl.xml"/>
+	<include href="Be2+_opt_wfs.xml"/>
+	
+	<hamiltonian name="h0" type="generic" default="multi" target="e">
+	<pairpot name="ElecElec" type="coulomb" source="e" target="e"/>
+	<pairpot name="Coulomb" type="coulomb" source="ion0" target="e"/>
+	<pairpot name="IonIon" type="coulomb" source="ion0" target="ion0"/>
+	<estimator type="gofr" name="gofr" num_bin="200" rmax="5.0" source="ion0"/>
+	</hamiltonian>
+
+  <!-- VMC -->
+  <qmc method="vmc" move="wbyw" checkpoint="-1">
+    <parameter name="steps">            40  </parameter>
+    <parameter name="samplesperthread"> 5   </parameter>
+
+    <parameter name="blocks">		200     </parameter>
+    <parameter name="warmupSteps">	100     </parameter>
+    <parameter name="timestep">		0.01    </parameter>
+    <parameter name="useDrift">		no      </parameter>
+  </qmc>
+
+  <!-- DMC -->
+  <qmc method="dmc" move="wbyw" checkpoint="0" dumpconfig="50">
+    <parameter name="timestep">     0.002   </parameter>
+    <parameter name="blocks">       100    </parameter>
+    <parameter name="steps">        40     </parameter>
+  </qmc>
+
+</simulation>

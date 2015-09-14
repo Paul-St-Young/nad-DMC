@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<qmcsystem>
+  <particleset name="e">
+    <group name="u" size="1">
+      <parameter name="charge">-1</parameter>
+      <attrib name="position" datatype="posArray">
+ -5.7658667213e-01 -5.5172580012e-01  3.2186417991e-01
+</attrib>
+    </group>
+    <group name="d" size="1">
+      <parameter name="charge">-1</parameter>
+      <attrib name="position" datatype="posArray">
+  1.9879535508e+00  1.0630643126e-01 -8.7391793516e-02
+</attrib>
+    </group>
+  </particleset>
+  <particleset name="ion0" size="1">
+    <group name="Be">
+      <parameter name="charge">4</parameter>
+      <parameter name="valence">2</parameter>
+      <parameter name="atomicnumber">4</parameter>
+      <parameter name="mass">16419.2608</parameter>
+      <parameter name="ionGrid">0.00000001</parameter>
+      <parameter name="tauFreq">1</parameter>
+    </group>
+    <attrib name="position" datatype="posArray">
+  0.0000000000e+00  0.0000000000e+00  0.0000000000e+00
+</attrib>
+    <attrib name="ionid" datatype="stringArray">
+ Be 
+</attrib>
+  </particleset>
+</qmcsystem>

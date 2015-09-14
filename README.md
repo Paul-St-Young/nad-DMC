@@ -1,2 +1,2 @@
 # nad-DMC
-nonadiabatic DMC
+to compile: ./build.sh
