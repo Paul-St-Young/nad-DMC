@@ -1,0 +1,50 @@
+Sep 8 2015
+----
+1. Attempt to add restart
+ va. run Be2+ DMC with Norm0 atomv0.12 - ERROR: VMCSingleOMP-Walker distribution on root - LHS and RHS don't conform 
+  originated from ParticleBase/ParticleAttrib, called by (disable pragma omp to debug) 
+    VMCSingleOMP.cpp:Movers[ip] - initWalkersForPbyP
+    QMCUpdateBase.cpp:initWalkersForPbyP - randomize - W.saveWalker
+    ParticleSet.cpp:saveWalker - awalker.ionPos=ionPos => LHS and RHS don't conform
+ * best place to break: QMCUpdateBase.cpp:255 (saveWalker)
+ # solution: loadWalker in QMCUpdateBase::initWalkersForPbyP. This initializes awalker.ionPos
+ # check: 1600 walkers, 0.005 ts * 200 * 400 DMC gave -13.6558(1) agrees with -13.6555(1) in ref
+ b. run Be2+ noBO restart with Norm0 atomv0.12 - ParticleAttrib::Error: LHS and RHS don't conform.
+  origingated from VMCSingleOMP:242 - Movers[ip]=new VMCUpdateAllWithIons, which calls
+    VMCUpdateAllWithIons.cpp:W.loadWalker 
+    ParticleSet::loadWalker - ionPos = awalker.ionPos
+      at this point, ionPos.size()=2, awalker.ionPos.size()=0, awalker is not initialized?
+
+Sep 9 2015
+----
+Continue restart attempt
+cont b. walker configuration is read by HDFWalkerInput_0_4.cpp from Be2+.s002.config.h5
+    looking at the h5 file we see the walker dimensions are 5,2,3 which stand for 5 walkers, 2 particles, 3 dimensions. Clearly, the ion position was not saved, need to fix that.
+  c. rerun Be2+ noBO with atomv0.12 and make sure ion position is saved
+    mcwalkerset is read by QMCMain::setMCWalkers
+    mcwalkerset is read by QMCDriver::putWalkers
+    config.h5 is written by HDFWalkerOutput::dump
+      HDFWalkerOutput gets number_of_particles=W.getTotalNum()
+        getTotalNum() defined in ParticleBase.h - return GlobalNum
+          GlobalNum is set by ParticleBase.cpp::create and resize
+  * I can resize the particle set, but that would cause all kinds of troubles mixing electronic and ionic information. I think the best thing to do is to rewrite HDFWalkerOutput::dump and add ion configurations to a new h5 section, then rewrite QMCDriver::putWalkers to read in that info
+  c.1. add num_ion field to config.h5
+    HDFVersion.h seems to keep all the names for items in the h5 file, added num_ion here
+    HDFWalkerOutput::write_configuration seems to write the walker field, add num_ion here
+        error: no instance of function template "qmcplusplus::hdf_archive::write" matches the argument list
+            argument types are: (int, const char [9])
+            object type is: qmcplusplus::hdf_archive
+        >hout.write(1,hdf::num_ions);
+    try add it to the begining of the function - compiled but no effect on the file
+
+Sep 10
+----
+Ray suggests that I should:
+1. Hack output to MCWalkerConfiguration.h::putConfigurations()
+        (input at HDFWalkerInput_0_4.cpp::put())
+2. Then disperse the info to electrons and ions, respectively
+I should start with 2. first, because this might not work. Look at HDFWalkerOutput::dump
+number_of_particles=W.getTotalNum() (GlobalNum <- # of electrons) which determins the size of RemoteData, which is what's written to the config.h5 file
+const int wb=OHMMS_DIM*number_of_particles;
+RemoteData[0]->resize(wb*W.getActiveWalkers());
+grep number_of_electrons, and see where that field is created. create a field for number_of_ions
