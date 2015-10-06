@@ -68,6 +68,8 @@ public:
   typedef WalkerList_t::iterator         iterator;
   ///const_iterator of Walker container
   typedef WalkerList_t::const_iterator   const_iterator;
+  // !!!! hack to put ion positions into restart file
+  bool swap_pos(iterator it, iterator it_end);
   /** starting index of the walkers in a processor group
    *
    * WalkerOffsets[0]=0 and WalkerOffsets[WalkerOffsets.size()-1]=total number of walkers in a group

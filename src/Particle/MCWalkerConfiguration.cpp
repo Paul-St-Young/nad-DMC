@@ -646,6 +646,26 @@ void MCWalkerConfiguration::clearEnsemble()
   CurSampleCount=0;
 }
 
+bool MCWalkerConfiguration::swap_pos(iterator it, iterator it_end)
+{ // !!!!!!!!!!!!!!! hack !!!!!!!!!!!!!!!!!
+  PosType ip,ep;
+  for(; it != it_end; ++it)
+  { // for entire walker population, trick QMCPACK into dumping ion positions by
+      // swapping the first few electron positions with ions
+       // This will work as long as there are no fewer electrons than ions
+
+    Walker_t& thisWalker(**it);
+
+    for (int ionIdx=0;ionIdx<ionPos.size();ionIdx++){
+        ip =  thisWalker.ionPos[ionIdx];
+        ep =  thisWalker.R[ionIdx];
+
+        thisWalker.ionPos[ionIdx] = ep;
+        thisWalker.R[ionIdx]  = ip;
+    }
+  }
+   return 1;
+}
 
 #ifdef QMC_CUDA
 void MCWalkerConfiguration::updateLists_GPU()

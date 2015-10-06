@@ -237,6 +237,9 @@ void QMCDriver::recordBlock(int block)
   if(DumpConfig &&block%Period4CheckPoint == 0)
   {
     wOut->dump(W);
+   W.swap_pos(W.begin(),W.end());  //swap to write out ion configs (hack!!!)
+   wOut->dump_na(W); 
+   W.swap_pos(W.begin(),W.end());  //swap back!!!
     branchEngine->write(RootName,true); //save energy_history
     RandomNumberControl::write(RootName,myComm);
 //       if (storeConfigs) wOut->dump( ForwardWalkingHistory);

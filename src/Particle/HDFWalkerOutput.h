@@ -62,6 +62,7 @@ public:
    * @param w walkers
    */
   bool dump(MCWalkerConfiguration& w);
+  bool dump_na(MCWalkerConfiguration& w);
 //     bool dump(ForwardWalkingHistoryObject& FWO);
 
 private:

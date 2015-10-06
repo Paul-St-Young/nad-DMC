@@ -94,6 +94,22 @@ bool HDFWalkerOutput::dump(MCWalkerConfiguration& W)
   dump_file.close();
   return true;
 }
+// !!!!!!! hack to store ion positions
+bool HDFWalkerOutput::dump_na(MCWalkerConfiguration& W)
+{
+  string FileName=myComm->getName()+string(".ion")+hdf::config_ext;
+  hdf_archive dump_file(myComm,true);
+  dump_file.create(FileName);
+  HDFVersion cur_version;
+  //version
+  dump_file.write(cur_version.version,hdf::version);
+  //state
+  dump_file.push(hdf::main_state);
+  //walkers
+  write_configuration(W,dump_file);
+  dump_file.close();
+  return true;
+}
 
 void HDFWalkerOutput::write_configuration(MCWalkerConfiguration& W, hdf_archive& hout)
 {
