@@ -32,11 +32,11 @@
     <parameter name="useDrift">		no      </parameter>
   </qmc>
 
-  <!-- DMC -->
+  <!-- DMC 
   <qmc method="dmc" move="wbyw" checkpoint="0" dumpconfig="50">
     <parameter name="timestep">     0.002   </parameter>
     <parameter name="blocks">       100    </parameter>
     <parameter name="steps">        40     </parameter>
-  </qmc>
+  </qmc>-->
 
 </simulation>

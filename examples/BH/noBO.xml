@@ -26,16 +26,16 @@
     <parameter name="steps">		100         </parameter>
     <parameter name="samplesperthread">		4   </parameter>
 
-    <parameter name="blocks">		40      </parameter>
+    <parameter name="blocks">		10      </parameter>
     <parameter name="warmupSteps">	100     </parameter>
     <parameter name="timestep">		0.03	</parameter>
     <parameter name="useDrift">		no      </parameter>
   </qmc>
 
   <!-- DMC -->
-  <qmc method="dmc" move="wbyw" checkpoint="-1">
+  <qmc method="dmc" move="wbyw" checkpoint="10">
     <parameter name="timestep">         0.004  </parameter>
-    <parameter name="blocks">           40    </parameter>
+    <parameter name="blocks">           10    </parameter>
     <parameter name="steps">            25    </parameter>
   </qmc>
 

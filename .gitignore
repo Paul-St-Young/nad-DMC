@@ -29,3 +29,7 @@
 
 # build files
 build
+
+# example files
+examples/*
+*.swp

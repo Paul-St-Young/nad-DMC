@@ -18,6 +18,8 @@
 #include "QMCDrivers/DriftOperators.h"
 #include "Message/OpenMP.h"
 
+#include <iostream>
+
 namespace qmcplusplus
 {
 
@@ -54,6 +56,19 @@ VMCUpdateAllWithIons::VMCUpdateAllWithIons(MCWalkerConfiguration& w, TrialWaveFu
   for (int i=0;i<ionsToMove.size();++i)
     ion_index.push_back(ionsToMove[i]);
   
+  vector<OrbitalBase*> Z=psi.getOrbitals();
+  vector<OrbitalBase*>::iterator it(Z.begin());
+  vector<OrbitalBase*>::iterator it_end(Z.end());
+  app_log() << " !!!!!!!!!!! updating determinant set " << endl;
+  app_log() << " number of orbitals = " << Z.size() << endl;
+  app_log() << " Z[0]=SlaterDet " << endl;
+  app_log() << " Z[1]=two-body jastrow, Z[2]=one-body jastrow " << endl;
+  app_log() << " SlaterDet.Dets[i] are DiracDeterminantBase" << endl;
+  app_log() << " LogValue are returned by OrbitalSetTraits::evaluateLogAndPhase" << endl;
+  //std::ostream myos; 
+  //Z[0]->reportStatus(myos);
+  //app_log() << myos << endl;
+
 }
 
 VMCUpdateAllWithIons::~VMCUpdateAllWithIons()
