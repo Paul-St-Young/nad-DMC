@@ -24,12 +24,14 @@ namespace qmcplusplus
 VMCUpdateAllWithIons::VMCUpdateAllWithIons(MCWalkerConfiguration& w, TrialWaveFunction& psi,
 					   QMCHamiltonian& h, RandomGenerator_t& rg, ParticleSet& ions,
 					   std::vector<int> ionsToMove)
-  : QMCUpdateBase(w,psi,h,rg), VMCIons(ions)
+  : QMCUpdateBase(w,psi,h,rg), VMCIons(ions) 
+// "ions" is initialized with coordinates read from the ptcl.xml
 {
   UpdatePbyP=false;
 
   MCWalkerConfiguration::iterator
     wit(W.begin()), wit_end(W.end());
+  app_log() << "initializing QMCDriver: VMCUpdateAllWithIons" << endl; 
 
   // the ions to be moved (i.e. mass>0) need to be introduced first the ions ParticleSet
   // at the moment
@@ -42,8 +44,11 @@ VMCUpdateAllWithIons::VMCUpdateAllWithIons(MCWalkerConfiguration& w, TrialWaveFu
 	{
 	  if (VMCIons.Mass[i]>0.0) 
 	    {
-	      W.ionPos[i]=VMCIons.R[i];
-              thisWalker.ionPos[i]=VMCIons.R[i];
+            if ( dot(W.ionPos[i],W.ionPos[i])>0 ) // this implies W.ionPos is filled by restart
+                VMCIons.R[i]=W.ionPos[i];
+            else  // initialize ion position in walker using info from inputfile
+                W.ionPos[i]=VMCIons.R[i];
+            thisWalker.ionPos[i]=VMCIons.R[i];
 	    }
 	}
       W.saveWalker(thisWalker);

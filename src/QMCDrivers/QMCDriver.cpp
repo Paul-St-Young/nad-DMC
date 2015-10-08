@@ -207,6 +207,7 @@ void QMCDriver::putWalkers(vector<xmlNodePtr>& wset)
   int nfile=wset.size();
   HDFWalkerInputManager W_in(W,myComm);
   // !!!!!! hack to read in ion positions from a separate h5 file
+  app_log() << "!!!!!!!!!!! In QMCDriver.cpp, reading electron and ion restart info !!!!!" << endl;
   /* !!! hack disable multiple restart files 
   for(int i=0; i<wset.size(); i++)
     if(W_in.put(wset[i]))
@@ -221,7 +222,6 @@ void QMCDriver::putWalkers(vector<xmlNodePtr>& wset)
   W_clone.put(wset[1]); //read ion positions
 
   // transfer over ion position information
-  app_log() << "!!!!!!!!!!!! reading restart info, IonStorage.size()=" << IonStorage.size() << endl;
   for (int iw=0; iw<W.WalkerList.size(); iw++){
     W.WalkerList[iw]->ionPos.resize(2); //setup ion positions in main walker
     W.WalkerList[iw]->ionPos[0] = (*Wion).WalkerList[iw]->R[0];  //copy over ions
