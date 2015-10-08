@@ -181,7 +181,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
       {
 	ionR[i]=thisWalker.ionPos[i];
 	VMCIons.R[ion_index[i]] = ionR[i];
-    app_log() << ionR[i] << endl;
+    // cout << ionR[i] << endl; // for debugging restart !!!!!!!!!!!
       }    
 
     int jj=0;
