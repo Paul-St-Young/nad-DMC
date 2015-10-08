@@ -4,4 +4,5 @@ export OMP_NUM_THREADS=1
 ROOT=../..
 BIN=$ROOT/build/bin/qmcapp
 
-$BIN noBO.xml
+#$BIN noBO.xml
+$BIN BH.s002.cont.xml

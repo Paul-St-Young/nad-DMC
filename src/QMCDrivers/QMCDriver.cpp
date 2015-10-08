@@ -208,6 +208,7 @@ void QMCDriver::putWalkers(vector<xmlNodePtr>& wset)
   HDFWalkerInputManager W_in(W,myComm);
   // !!!!!! hack to read in ion positions from a separate h5 file
   app_log() << "!!!!!!!!!!! In QMCDriver.cpp, reading electron and ion restart info !!!!!" << endl;
+  Restart=true;
   /* !!! hack disable multiple restart files 
   for(int i=0; i<wset.size(); i++)
     if(W_in.put(wset[i]))

@@ -211,6 +211,8 @@ protected:
   bool DumpConfig;
   ///true, if the size of population is fixed.
   bool ConstPopulation;
+  ///true, if this is a restart run
+  bool Restart;
   /** the number of times this QMCDriver is executed
    *
    * MyCounter is initialized to zero by the constructor and is incremented

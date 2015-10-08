@@ -239,7 +239,7 @@ void VMCSingleOMP::resetRun()
         else
         {	  
           os <<"  walker moves with |psi|^2, using VMCUpdateAllWithIons"<<endl;
-          Movers[ip]=new VMCUpdateAllWithIons(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip],*ions,ionsToBeMoved);
+          Movers[ip]=new VMCUpdateAllWithIons(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip],*ions,ionsToBeMoved,Restart);
 	  
 	  SpeciesSet tspecies(ions->getSpeciesSet());
 	  int tauFreq_in=tspecies.addAttribute("tauFreq");
