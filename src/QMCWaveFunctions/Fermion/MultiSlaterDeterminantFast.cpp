@@ -161,7 +161,7 @@ void MultiSlaterDeterminantFast::testMSD(ParticleSet& P, int iat)
   APP_ABORT("After MultiSlaterDeterminantFast::testMSD()");
 }
 
-void MultiSlaterDeterminantFast::updateCoeff(vector<PosType> ionPos){
+void MultiSlaterDeterminantFast::updateCoeff(const vector<PosType> &ionPos){
   // update determinant coeffients with ion position
   // !!! this is the first implementation, hard-code to do CH
   RealType CHdistance=std::sqrt( dot(ionPos[1],ionPos[1]) );

@@ -324,7 +324,7 @@ public:
     //OneOverM = 1.0/mass;
   }
 
-
+  void updateCoeff(const vector<PosType> &ionPos);
 
 private:
 

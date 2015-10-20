@@ -874,6 +874,16 @@ void TrialWaveFunction::get_ratios(ParticleSet& P, vector<ValueType>& ratios)
   }
 }
 
+void TrialWaveFunction::updateCoeff(const vector<PosType> &ionPos){
+  vector<OrbitalBase*>::iterator it(Z.begin());
+  vector<OrbitalBase*>::iterator it_end(Z.end());
+  for (; it!=it_end; ++it){
+    if ( (*it)->OrbitalName=="MultiSlaterDeterminantFast" ){
+      (*it)->updateCoeff(ionPos);
+    }
+  }
+}
+
 }
 /***************************************************************************
 * $RCSfile$   $Author: jnkim $

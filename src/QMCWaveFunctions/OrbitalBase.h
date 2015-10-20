@@ -353,6 +353,7 @@ struct OrbitalBase: public QMCTraits
                       int iat) =0;
 
 
+  virtual void updateCoeff(const vector<PosType> &ionPos){app_log() << "OrbitalBase::updateCoeff" << endl;};
   /** equivalent to evaluateLog(P,G,L) with write-back function */
   virtual RealType evaluateLog(ParticleSet& P,BufferType& buf)=0;
 
