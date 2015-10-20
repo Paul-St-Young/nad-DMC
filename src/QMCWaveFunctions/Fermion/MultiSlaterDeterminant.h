@@ -150,6 +150,7 @@ public:
   vector<int> C2node_dn;
 
   vector<RealType> C;
+  vector<RealType> originalC;
 
   // lap(#uniqueDet,part#)
   ValueVector_t detValues_up;

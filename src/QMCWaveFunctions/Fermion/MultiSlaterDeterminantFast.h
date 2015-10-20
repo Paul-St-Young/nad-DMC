@@ -171,6 +171,7 @@ public:
   vector<int> C2node_dn;
 
   vector<RealType> C;
+  vector<RealType> originalC;
 
   ValueType curRatio;
   ValueType psiCurrent;

@@ -477,7 +477,7 @@ bool SlaterDetBuilder::createMSDFast(MultiSlaterDeterminantFast* multiSD, xmlNod
   bool optimizeCI;
   int nels_up = multiSD->nels_up;
   int nels_dn = multiSD->nels_dn;
-  success = readDetList(cur,uniqueConfg_up,uniqueConfg_dn,multiSD->C2node_up, multiSD->C2node_dn,CItags,multiSD->C,optimizeCI,nels_up,nels_dn,multiSD->CSFcoeff,multiSD->DetsPerCSF,multiSD->CSFexpansion,multiSD->usingCSF);
+  success = readDetList(cur,uniqueConfg_up,uniqueConfg_dn,multiSD->C2node_up, multiSD->C2node_dn,CItags,multiSD->C,optimizeCI,nels_up,nels_dn,multiSD->CSFcoeff,multiSD->DetsPerCSF,multiSD->CSFexpansion,multiSD->usingCSF,multiSD->originalC);
   if(!success)
     return false;
 // you should choose the det with highest weight for reference
@@ -628,7 +628,7 @@ bool SlaterDetBuilder::createMSD(MultiSlaterDeterminant* multiSD, xmlNodePtr cur
   bool optimizeCI;
   int nels_up = multiSD->nels_up;
   int nels_dn = multiSD->nels_dn;
-  success = readDetList(cur,uniqueConfg_up,uniqueConfg_dn,multiSD->C2node_up, multiSD->C2node_dn,CItags,multiSD->C,optimizeCI,nels_up,nels_dn,multiSD->CSFcoeff,multiSD->DetsPerCSF,multiSD->CSFexpansion,multiSD->usingCSF);
+  success = readDetList(cur,uniqueConfg_up,uniqueConfg_dn,multiSD->C2node_up, multiSD->C2node_dn,CItags,multiSD->C,optimizeCI,nels_up,nels_dn,multiSD->CSFcoeff,multiSD->DetsPerCSF,multiSD->CSFexpansion,multiSD->usingCSF,multiSD->originalC);
   if(!success)
     return false;
   multiSD->resize(uniqueConfg_up.size(),uniqueConfg_dn.size());
@@ -732,7 +732,7 @@ bool SlaterDetBuilder::createMSD(MultiSlaterDeterminant* multiSD, xmlNodePtr cur
 }
 
 
-bool SlaterDetBuilder::readDetList(xmlNodePtr cur, vector<ci_configuration>& uniqueConfg_up, vector<ci_configuration>& uniqueConfg_dn, vector<int>& C2node_up, vector<int>& C2node_dn, vector<std::string>& CItags, vector<RealType>& coeff, bool& optimizeCI, int nels_up, int nels_dn,  vector<RealType>& CSFcoeff, vector<int>& DetsPerCSF, vector<RealType>& CSFexpansion, bool& usingCSF)
+bool SlaterDetBuilder::readDetList(xmlNodePtr cur, vector<ci_configuration>& uniqueConfg_up, vector<ci_configuration>& uniqueConfg_dn, vector<int>& C2node_up, vector<int>& C2node_dn, vector<std::string>& CItags, vector<RealType>& coeff, bool& optimizeCI, int nels_up, int nels_dn,  vector<RealType>& CSFcoeff, vector<int>& DetsPerCSF, vector<RealType>& CSFexpansion, bool& usingCSF, vector<RealType>& originalC)
 {
   bool success=true;
   uniqueConfg_up.clear();
@@ -1018,7 +1018,6 @@ bool SlaterDetBuilder::readDetList(xmlNodePtr cur, vector<ci_configuration>& uni
       cur = cur->next;
     }
   } //usingCSF
-  //if(count != ndets) {
   if(cnt0 != ndets)
   {
     cerr<<"count, ndets: " <<cnt0 <<"  " <<ndets <<endl;
@@ -1084,6 +1083,8 @@ bool SlaterDetBuilder::readDetList(xmlNodePtr cur, vector<ci_configuration>& uni
   }
   app_log() <<"Found " <<uniqueConfg_up.size() <<" unique up determinants.\n";
   app_log() <<"Found " <<uniqueConfg_dn.size() <<" unique down determinants.\n";
+  originalC.resize(coeff.size());
+  std::copy(coeff.begin(),coeff.end(),originalC.begin());
   return success;
 }
 
