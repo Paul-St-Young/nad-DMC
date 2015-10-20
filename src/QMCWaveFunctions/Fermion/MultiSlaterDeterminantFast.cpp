@@ -161,6 +161,25 @@ void MultiSlaterDeterminantFast::testMSD(ParticleSet& P, int iat)
   APP_ABORT("After MultiSlaterDeterminantFast::testMSD()");
 }
 
+void MultiSlaterDeterminantFast::updateCoeff(vector<PosType> ionPos){
+  // update determinant coeffients with ion position
+  // !!! this is the first implementation, hard-code to do CH
+  RealType CHdistance=std::sqrt( dot(ionPos[1],ionPos[1]) );
+  RealType CHdistanceo=2.116493107; // Bohr
+  // !!! hard-code coefficient interpolation
+  vector<RealType> slope(C.size(),0.0);
+
+  // C contains current coefficients
+  // CSFcoeff initialized with original coefficients in MultiSlaterDeterminantFast constructor
+    // - this should work for restart since original C are always read from input ptcl.xml
+  vector<RealType>::iterator it(C.begin()),last(C.end());
+  vector<RealType>::iterator original_it(originalC.begin()),original_last(originalC.end());
+  vector<RealType>::iterator slope_it(slope.begin()),slope_last(slope.end());
+  while(it != last){ // linear interpolation
+    (*it)=(*slope_it)*(CHdistance-CHdistanceo)+(*original_it); 
+    it++; slope_it++; original_it++;
+  }
+}
 OrbitalBase::ValueType MultiSlaterDeterminantFast::evaluate(ParticleSet& P
     , ParticleSet::ParticleGradient_t& G, ParticleSet::ParticleLaplacian_t& L)
 {
