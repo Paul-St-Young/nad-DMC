@@ -212,6 +212,13 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
         
 	VMCIons.R[ion_index[i]] = ionR[i];
       }    
+
+    // update determinant coeffients with ion position
+    // !!! this is the first implementation, hard-code to do CH
+    RealType CHdistance=std::sqrt( dot(VMCIons.R[1],VMCIons.R[1]) );
+    RealType CHdistanceo=2.116493107; // Bohr
+
+     Psi.updateCoeff(CHdistance-CHdistanceo); // update coefficients after ion move
 /*
        PosType displ = ionR[1] -ionR[0];
        RealType odist= std::sqrt(displ[0]*displ[0]+displ[1]*displ[1]+displ[2]*displ[2]);
@@ -275,6 +282,12 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
 	}
       VMCIons.update();
       H.update_source(VMCIons);
+
+      // update determinant coeffients with ion position
+      // !!! this is the first implementation, hard-code to do CH
+      RealType CHdistance=std::sqrt( dot(VMCIons.R[1],VMCIons.R[1]) );
+      Psi.updateCoeff(CHdistance-CHdistanceo); // put back coefficients if move rejected
+
       W.update();
       H.rejectedMove(W,thisWalker);
     }

@@ -96,7 +96,7 @@ public:
     Dets[1]->setBF(bf);
   }
 
-  void updateCoeff(const vector<PosType> &ionPos); // !! hack to interpolate coefficients
+  void updateCoeff(RealType RminusRo); // !! hack to interpolate coefficients
 
   ValueType
   evaluate(ParticleSet& P

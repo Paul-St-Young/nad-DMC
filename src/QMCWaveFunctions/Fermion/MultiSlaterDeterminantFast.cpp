@@ -161,11 +161,9 @@ void MultiSlaterDeterminantFast::testMSD(ParticleSet& P, int iat)
   APP_ABORT("After MultiSlaterDeterminantFast::testMSD()");
 }
 
-void MultiSlaterDeterminantFast::updateCoeff(const vector<PosType> &ionPos){
+void MultiSlaterDeterminantFast::updateCoeff(RealType RminusRo){
   // update determinant coeffients with ion position
-  // !!! this is the first implementation, hard-code to do CH
-  RealType CHdistance=std::sqrt( dot(ionPos[1],ionPos[1]) );
-  RealType CHdistanceo=2.116493107; // Bohr
+
   // !!! hard-code coefficient interpolation
   vector<RealType> slope(C.size(),0.0);
 
@@ -176,7 +174,8 @@ void MultiSlaterDeterminantFast::updateCoeff(const vector<PosType> &ionPos){
   vector<RealType>::iterator original_it(originalC.begin()),original_last(originalC.end());
   vector<RealType>::iterator slope_it(slope.begin()),slope_last(slope.end());
   while(it != last){ // linear interpolation
-    (*it)=(*slope_it)*(CHdistance-CHdistanceo)+(*original_it); 
+    // Ci(R)=dCi/dR*(R-Ro)+Ci(Ro)
+    (*it)=(*slope_it)*RminusRo+(*original_it); 
     it++; slope_it++; original_it++;
   }
 }
