@@ -19,6 +19,7 @@
 	<pairpot name="Coulomb" type="coulomb" source="ion0" target="e"/>
 	<pairpot name="IonIon" type="coulomb" source="ion0" target="ion0"/>
 	<estimator type="gofr" name="gofr" num_bin="200" rmax="5.0" source="ion0"/>
+	<estimator type="distance" name="distance" particle1="B" particle2="H"/>
 	</hamiltonian>
 
   <!-- VMC -->
@@ -32,11 +33,11 @@
     <parameter name="useDrift">		no      </parameter>
   </qmc>
 
-  <!-- DMC -->
+  <!-- DMC 
   <qmc method="dmc" move="wbyw" checkpoint="10">
     <parameter name="timestep">         0.004  </parameter>
     <parameter name="blocks">           10    </parameter>
     <parameter name="steps">            25    </parameter>
-  </qmc>
+  </qmc>-->
 
 </simulation>

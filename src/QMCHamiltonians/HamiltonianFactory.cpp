@@ -29,6 +29,7 @@
 #include "QMCHamiltonians/LocalMomentEstimator.h"
 #include "QMCHamiltonians/DensityEstimator.h"
 #include "QMCHamiltonians/SkEstimator.h"
+#include "QMCHamiltonians/DistanceEstimator.h"
 #if OHMMS_DIM == 3
 #include "QMCHamiltonians/ChiesaCorrection.h"
 #if defined(HAVE_LIBFFTW_LS)
@@ -342,6 +343,22 @@ bool HamiltonianFactory::build(xmlNodePtr cur, bool buildtree)
           apot->put(cur);
           targetH->addOperator(apot,potName,false);
         }
+      }
+      else if (potType == "distance")
+      {
+        string SourceName = "ion0";
+        OhmmsAttributeSet hAttrib;
+        hAttrib.add(SourceName, "source");
+        hAttrib.put(cur);
+        PtclPoolType::iterator pit(ptclPool.find(SourceName));
+        if(pit == ptclPool.end())
+        {
+          APP_ABORT("Unknown source \"" + SourceName + "\" for Distance.");
+        }
+        ParticleSet* source = (*pit).second;
+        DistanceEstimator* apot = new DistanceEstimator(*targetPtcl,*source);
+        apot->put(cur);
+        targetH->addOperator(apot,potName,false);
       }
       else if(potType == "sk")
       {

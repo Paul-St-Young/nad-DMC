@@ -15,6 +15,7 @@ SET(HAMSRCS
   ForceBase.cpp
   HamiltonianFactory.cpp
   CoulombPotentialFactory.cpp
+  DistanceEstimator.cpp
 )
 #  FSAtomPseudoPot.cpp
 
