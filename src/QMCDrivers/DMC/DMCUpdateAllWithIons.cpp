@@ -25,6 +25,15 @@
 namespace qmcplusplus
 {
 
+void DMCUpdateAllWithIons::updateCoeff(){
+    // update determinant coeffients with ion position
+    // !!! this is the first implementation, hard-code to do CH
+    RealType CHdistance=std::sqrt( dot(DMCIons.R[1],DMCIons.R[1]) );
+    RealType CHdistanceo=2.116493107; // Bohr
+
+    Psi.updateCoeff(CHdistance-CHdistanceo); // update coefficients after ion move
+}
+
 /// Constructor.
 DMCUpdateAllWithIons::DMCUpdateAllWithIons(MCWalkerConfiguration& w,
 					   TrialWaveFunction& psi, QMCHamiltonian& h, RandomGenerator_t& rg, 
@@ -130,6 +139,7 @@ void DMCUpdateAllWithIons::dorotateshift(PosType& origin, PosType &second, RealT
    DMCIons.R[ion_index[0]] = neworigin;
    DMCIons.R[ion_index[1]] = newsec;
    DMCIons.update();
+   updateCoeff();
    H.update_source(DMCIons);
    W.update();
   
@@ -146,6 +156,7 @@ void DMCUpdateAllWithIons::dorotateshift(PosType& origin, PosType &second, RealT
    DMCIons.R[ion_index[0]] = origin;
    DMCIons.R[ion_index[1]] = second;
    DMCIons.update();
+   updateCoeff();
    H.update_source(DMCIons);
    W.update();
  ///
@@ -188,6 +199,9 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 	DMCIons.R[ion_index[i]] = ionR[i]; 	
       }    
     DMCIons.update();
+   updateCoeff();
+
+    
 
     W.loadWalker(thisWalker,true);
 
@@ -240,6 +254,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 	  {
 	    DMCIons.R[ion_index[j]][i] = ionR[j][i]-h;
 	    DMCIons.update();
+   updateCoeff();
 	    W.update();	
             np1 = DMCIons.R[ion_index[0]]; np2 = DMCIons.R[ion_index[1]];
             dorotateshift(np1,np2,wfs[i][0]);
@@ -249,6 +264,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 	    
 	    DMCIons.R[ion_index[j]][i] = ionR[j][i]+h;
 	    DMCIons.update();
+   updateCoeff();
 	    W.update();	  
             np1 = DMCIons.R[ion_index[0]]; np2 = DMCIons.R[ion_index[1]];
             dorotateshift(np1,np2,wfs[i][1]);
@@ -258,6 +274,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 	    
 	    DMCIons.R[ion_index[j]][i] = ionR[j][i];
 	    DMCIons.update();
+   updateCoeff();
 	    W.update();	  	  
 	  }
 	
@@ -305,6 +322,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 	  DMCIons.R[ion_index[i]] = thisWalker.ionPos[i];
 	}
       DMCIons.update();
+   updateCoeff();
       H.update_source(DMCIons);
       W.update();      
       
@@ -334,6 +352,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
       }    
     
     DMCIons.update(); // update ions
+   updateCoeff();
     H.update_source(DMCIons); // update ions in Hamiltonian 
     W.update();  // update "wave function" i.e. distances
 
@@ -362,6 +381,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 	  DMCIons.R[ion_index[i]] = thisWalker.ionPos[i];
 	}
       DMCIons.update();
+   updateCoeff();
       H.update_source(DMCIons);
       W.update();
       
@@ -397,6 +417,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 		{
 		  DMCIons.R[ion_index[j]][i] = ionR[j][i]-h;
 		  DMCIons.update();
+   updateCoeff();
 		  W.update();	  
                   np1 = DMCIons.R[ion_index[0]]; np2 = DMCIons.R[ion_index[1]];
                   dorotateshift(np1,np2,wfs[i][0]);
@@ -406,6 +427,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 		  
 		  DMCIons.R[ion_index[j]][i] = ionR[j][i]+h;
 		  DMCIons.update();
+   updateCoeff();
 		  W.update();	  
                   np1 = DMCIons.R[ion_index[0]]; np2 = DMCIons.R[ion_index[1]];
                   dorotateshift(np1,np2,wfs[i][1]);
@@ -415,6 +437,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 		  
 		  DMCIons.R[ion_index[j]][i] = ionR[j][i];
 		  DMCIons.update();
+   updateCoeff();
 		  W.update();	  	  
 		}
 	      //ionsKineticE += IonKineticEnergy(wfs,f,h,DMCIons.Mass[j]);
@@ -488,6 +511,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
 	    DMCIons.R[ion_index[i]] = thisWalker.ionPos[i];
 	  }
 	DMCIons.update();
+   updateCoeff();
 	H.update_source(DMCIons);
 	W.update();
 	
@@ -534,6 +558,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
    DMCIons.R[ion_index[0]] = ntneworigin;
    DMCIons.R[ion_index[1]] = ntnewsec;
    DMCIons.update();
+   updateCoeff();
    H.update_source(DMCIons);
    W.update();
  W.makeShiftRotate(deltaR,ionR[0],ionR[1]);

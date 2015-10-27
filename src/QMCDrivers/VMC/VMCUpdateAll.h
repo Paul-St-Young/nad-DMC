@@ -74,6 +74,7 @@ public:
 //     , vector<RandomGenerator_t*>& rng
 //     , vector<RealType>& ratio_i_0);
 
+void updateCoeff();
 void dorotateshift(PosType & origin,PosType  &second, RealType &getpsi);
 private:
   /// Copy Constructor (disabled)

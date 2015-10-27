@@ -39,6 +39,7 @@ public:
 
   void advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, bool measure);
   void dorotateshift(PosType & origin,PosType  &second, RealType &getpsi);
+  void updateCoeff();
 private:
   /// Copy Constructor (disabled)
   DMCUpdateAllWithIons(const DMCUpdateAllWithIons& a): QMCUpdateBase(a), DMCIons(a.DMCIons) {}

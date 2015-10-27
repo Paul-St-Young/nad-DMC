@@ -78,15 +78,21 @@ VMCUpdateAllWithIons::VMCUpdateAllWithIons(MCWalkerConfiguration& w, TrialWaveFu
       ++jj;
     }
   }
-  
-
-  
 }
 
 VMCUpdateAllWithIons::~VMCUpdateAllWithIons()
 {
 }
 
+
+void VMCUpdateAllWithIons::updateCoeff(){
+    // update determinant coeffients with ion position
+    // !!! this is the first implementation, hard-code to do CH
+    RealType CHdistance=std::sqrt( dot(VMCIons.R[1],VMCIons.R[1]) );
+    RealType CHdistanceo=2.116493107; // Bohr
+
+     Psi.updateCoeff(CHdistance-CHdistanceo); // update coefficients after ion move
+}
 
 
 void VMCUpdateAllWithIons::dorotateshift(PosType& origin, PosType &second, RealType &getpsi )
@@ -128,6 +134,7 @@ void VMCUpdateAllWithIons::dorotateshift(PosType& origin, PosType &second, RealT
    VMCIons.R[ion_index[0]] = neworigin;
    VMCIons.R[ion_index[1]] = newsec;
    VMCIons.update();
+   updateCoeff();
    H.update_source(VMCIons);
    W.update();
   
@@ -142,6 +149,7 @@ void VMCUpdateAllWithIons::dorotateshift(PosType& origin, PosType &second, RealT
    VMCIons.R[ion_index[0]] = origin;
    VMCIons.R[ion_index[1]] = second;
    VMCIons.update();
+   updateCoeff();
    H.update_source(VMCIons);
    W.update();
  ///
@@ -213,12 +221,6 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
 	VMCIons.R[ion_index[i]] = ionR[i];
       }    
 
-    // update determinant coeffients with ion position
-    // !!! this is the first implementation, hard-code to do CH
-    RealType CHdistance=std::sqrt( dot(VMCIons.R[1],VMCIons.R[1]) );
-    RealType CHdistanceo=2.116493107; // Bohr
-
-     Psi.updateCoeff(CHdistance-CHdistanceo); // update coefficients after ion move
 /*
        PosType displ = ionR[1] -ionR[0];
        RealType odist= std::sqrt(displ[0]*displ[0]+displ[1]*displ[1]+displ[2]*displ[2]);
@@ -244,6 +246,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
 	VMCIons.R[ion_index[i]] = thisWalker.ionPos[i];
       }
       VMCIons.update();
+   updateCoeff();
       H.update_source(VMCIons);
       W.update();
 
@@ -252,6 +255,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
       continue;
     }
     VMCIons.update();
+   updateCoeff();
     H.update_source(VMCIons);
     W.update();    
 
@@ -281,12 +285,8 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
 	  VMCIons.R[ion_index[i]] = thisWalker.ionPos[i];
 	}
       VMCIons.update();
+   updateCoeff();
       H.update_source(VMCIons);
-
-      // update determinant coeffients with ion position
-      // !!! this is the first implementation, hard-code to do CH
-      RealType CHdistance=std::sqrt( dot(VMCIons.R[1],VMCIons.R[1]) );
-      Psi.updateCoeff(CHdistance-CHdistanceo); // put back coefficients if move rejected
 
       W.update();
       H.rejectedMove(W,thisWalker);
@@ -324,12 +324,14 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
            {
            VMCIons.R[ion_index[j]][2] = ionR[ionidx][2] - std::sqrt(h*h+zdist*zdist);
             VMCIons.update();
+   updateCoeff();
             W.update();	  
            }
           if(zdist < 0)
            {
            VMCIons.R[ion_index[j]][2] = ionR[ionidx][2] + std::sqrt(h*h+zdist*zdist);
             VMCIons.update();
+   updateCoeff();
             W.update();	  
            }
 
@@ -343,6 +345,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
 //    W.makeRotate(thisWalker,deltaR,ionR[ionidx],0,i);   //rotate back
             VMCIons.R[ion_index[j]][2] = ionR[j][2];
             VMCIons.update();
+   updateCoeff();
             W.update();	  
           }
 
@@ -350,6 +353,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
 	    {
 	      VMCIons.R[ion_index[j]][i] = ionR[j][i]-h;
 	      VMCIons.update();
+   updateCoeff();
 	      W.update();	  
 //	      wfs[i][0]=std::exp(Psi.evaluateLog(W));
               np1 = VMCIons.R[ion_index[0]]; np2 = VMCIons.R[ion_index[1]];
@@ -359,6 +363,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
 	      
 	      VMCIons.R[ion_index[j]][i] = ionR[j][i]+h;
 	      VMCIons.update();
+   updateCoeff();
 	      W.update();	  
 //	      wfs[i][1]=std::exp(Psi.evaluateLog(W));
               np1 = VMCIons.R[ion_index[0]]; np2 = VMCIons.R[ion_index[1]];
@@ -368,6 +373,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
 	      
 	      VMCIons.R[ion_index[j]][i] = ionR[j][i];
 	      VMCIons.update();
+   updateCoeff();
 	      W.update();	  	  
 	    }
 	  //ionsKineticE += IonKineticEnergy(wfs,f,h,VMCIons.Mass[j]);
@@ -416,6 +422,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
    VMCIons.R[ion_index[0]] = ntneworigin;
    VMCIons.R[ion_index[1]] = ntnewsec;
    VMCIons.update();
+   updateCoeff();
    H.update_source(VMCIons);
    W.update();
  W.makeShiftRotate(deltaR,ionR[0],ionR[1]);
