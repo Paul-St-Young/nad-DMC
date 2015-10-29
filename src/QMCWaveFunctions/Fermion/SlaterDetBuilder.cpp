@@ -1085,6 +1085,10 @@ bool SlaterDetBuilder::readDetList(xmlNodePtr cur, vector<ci_configuration>& uni
   app_log() <<"Found " <<uniqueConfg_dn.size() <<" unique down determinants.\n";
   originalC.resize(coeff.size());
   std::copy(coeff.begin(),coeff.end(),originalC.begin());
+  /*ofstream out("ci.dat",ios::out);
+  for (int i=0;i<coeff.size();i++){
+    out << i << " " << coeff[i] << endl;
+  }*/
   return success;
 }
 
