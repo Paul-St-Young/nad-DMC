@@ -216,7 +216,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
  //       deltaR[i][1] = 0;
  //       deltaR[i][2] = 0;
    //ntdeubg delete me (the factor 2)
-	ionR[i]=ionR[i]+std::sqrt(tau_eff/VMCIons.Mass[ion_index[i]])*deltaR[i];
+	//ionR[i]=ionR[i]+std::sqrt(tau_eff/VMCIons.Mass[ion_index[i]])*deltaR[i];
         
 	VMCIons.R[ion_index[i]] = ionR[i];
       }    
@@ -307,7 +307,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
       RealType h=UniformGrid_h*1000; // defined in QMCUpdateBase.h
       
       RealType ionsKineticE=0.0;
-      for (int j=0;j<thisWalker.ionPos.size();++j)
+      /*for (int j=0;j<thisWalker.ionPos.size();++j)
 	{	  
 	  for (int i=2;i<2;++i)
           { 
@@ -380,7 +380,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
 	  
 	  ionsKineticE += IonKineticEnergy3_2(wfs,f,h,VMCIons.Mass[ion_index[j]],ion_index[j],VMCIons.R);//should also give the gradient as output (however, not at the moment)
 
-	}           
+	} // end ionsKinetic */           
 
       //cout << "old " << H.evaluate(W) << endl;
     //  RealType logpsi(Psi.evaluateLog(W));
