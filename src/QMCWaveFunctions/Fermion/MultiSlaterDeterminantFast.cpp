@@ -253,8 +253,14 @@ OrbitalBase::ValueType MultiSlaterDeterminantFast::evaluate(ParticleSet& P
   myL=0.0;
   vector<int>::iterator upC(C2node_up.begin()),dnC(C2node_dn.begin());
   vector<RealType>::iterator it(C.begin()),last(C.end());
+  //int idx=0; // !!!!!!!! debuging coefficient interpolation
   while(it != last)
   {
+    /*if (idx<3){
+      cout << idx << ": " << (*it) << endl;
+    }
+    idx++;
+    */
     psiCurrent += (*it)*detValues_up[*upC]*detValues_dn[*dnC];
     for(int k=0,n=N1; k<NP1; k++,n++)
     {
