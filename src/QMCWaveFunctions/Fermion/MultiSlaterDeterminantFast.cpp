@@ -275,8 +275,6 @@ void MultiSlaterDeterminantFast::updateCoeff(RealType RminusRo){
   RealType Ro=2.116493107;
 
   // C contains current coefficients
-  // CSFcoeff initialized with original coefficients in MultiSlaterDeterminantFast constructor
-    // - this should work for restart since original C are always read from input ptcl.xml
   vector<RealType>::iterator it(C.begin()),last(C.end());
   vector<RealType>::iterator ch20_it(ch20.begin()),ch20_last(ch20.end());
   vector<RealType>::iterator ch225_it(ch225.begin()),ch225_last(ch225.end());
