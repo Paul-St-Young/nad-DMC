@@ -1086,10 +1086,10 @@ bool SlaterDetBuilder::readDetList(xmlNodePtr cur, vector<ci_configuration>& uni
   originalC.resize(coeff.size());
   std::copy(coeff.begin(),coeff.end(),originalC.begin());
   
-  ofstream out("ci.dat",ios::out); // !!!! debuging interpolation code
+  /*ofstream out("ci.dat",ios::out); // !!!! debuging interpolation code
   for (int i=0;i<coeff.size();i++){
     out << i << " " << coeff[i] << endl;
-  }
+  }*/
   return success;
 }
 
