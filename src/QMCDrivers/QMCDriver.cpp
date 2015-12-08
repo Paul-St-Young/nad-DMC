@@ -34,7 +34,7 @@ namespace qmcplusplus
 
 QMCDriver::QMCDriver(MCWalkerConfiguration& w, TrialWaveFunction& psi, QMCHamiltonian& h, WaveFunctionPool& ppool)
   : MPIObjectBase(0), branchEngine(0)
-  , W(w), Psi(psi), H(h), psiPool(ppool), Estimators(0), qmcNode(NULL), wOut(0), Restart(false)
+  , W(w), Psi(psi), H(h), psiPool(ppool), Estimators(0), qmcNode(NULL), wOut(0), Restart(false), Interpolate(false)
 {
   //set defaults
   ResetRandom=false;
@@ -100,6 +100,7 @@ QMCDriver::QMCDriver(MCWalkerConfiguration& w, TrialWaveFunction& psi, QMCHamilt
   m_param.add(Tau,"tau","AU");
   MaxCPUSecs=360000; //100 hours
   m_param.add(MaxCPUSecs,"maxcpusecs","real");
+  m_param.add(Interpolate,"interpolate","bool");
   QMCType="invalid";
   ////add each QMCHamiltonianBase to W.PropertyList so that averages can be taken
   //H.add2WalkerProperty(W);

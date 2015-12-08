@@ -59,7 +59,7 @@ public:
   /// Constructor.
   VMCUpdateAllWithIons(MCWalkerConfiguration& w, TrialWaveFunction& psi,
 		       QMCHamiltonian& h, RandomGenerator_t& rg, ParticleSet& ions,
-		       std::vector<int> ionsToMove, bool Restart);
+		       std::vector<int> ionsToMove, bool Restart, bool Interpolate);
 
   ~VMCUpdateAllWithIons();
 
@@ -85,6 +85,7 @@ private:
     return *this;
   }
  bool Restart;
+ bool Interpolate;
 };
 
 

@@ -98,7 +98,7 @@ void DMCOMP::resetComponents(xmlNodePtr cur)
     }
     else
     {
-      Movers[ip] = new DMCUpdateAllWithIons(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip],*ions,ionsToMove);
+      Movers[ip] = new DMCUpdateAllWithIons(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip],*ions,ionsToMove,Restart,Interpolate);
       /*
       if(KillNodeCrossing)
         Movers[ip] = new DMCUpdateAllWithKill(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip]);
@@ -214,7 +214,7 @@ void DMCOMP::resetUpdateEngines()
 	}
       else
 	{
-	  Movers[ip] = new DMCUpdateAllWithIons(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip],*ions,ionsToMove);
+	  Movers[ip] = new DMCUpdateAllWithIons(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip],*ions,ionsToMove,Restart,Interpolate);
 	  /*
 	    if(KillNodeCrossing)
 	    Movers[ip] = new DMCUpdateAllWithKill(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip]);

@@ -30,7 +30,7 @@ public:
 
   /// Constructor.
   DMCUpdateAllWithIons(MCWalkerConfiguration& w, TrialWaveFunction& psi, QMCHamiltonian& h, RandomGenerator_t& rg, ParticleSet& ions,
-		       std::vector<int> ionsToMove);
+		       std::vector<int> ionsToMove, bool Restart, bool Interpolate);
   ///destructor
   ~DMCUpdateAllWithIons();
 
@@ -48,6 +48,8 @@ private:
     {
       return *this;
     }
+  bool Restart;
+  bool Interpolate;
 };
 
 

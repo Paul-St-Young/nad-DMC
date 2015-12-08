@@ -23,8 +23,8 @@ namespace qmcplusplus
 
 VMCUpdateAllWithIons::VMCUpdateAllWithIons(MCWalkerConfiguration& w, TrialWaveFunction& psi,
 					   QMCHamiltonian& h, RandomGenerator_t& rg, ParticleSet& ions,
-					   std::vector<int> ionsToMove, bool Restart)
-  : QMCUpdateBase(w,psi,h,rg), VMCIons(ions), Restart(Restart)
+					   std::vector<int> ionsToMove, bool Restart, bool Interpolate)
+  : QMCUpdateBase(w,psi,h,rg), VMCIons(ions), Restart(Restart), Interpolate(Interpolate)
 // "ions" is initialized with coordinates read from the ptcl.xml
 {
   UpdatePbyP=false;
@@ -88,10 +88,12 @@ VMCUpdateAllWithIons::~VMCUpdateAllWithIons()
 void VMCUpdateAllWithIons::updateCoeff(){
     // update determinant coeffients with ion position
     // !!! this is the first implementation, hard-code to do CH
-    RealType CHdistance=std::sqrt( dot(VMCIons.R[1],VMCIons.R[1]) );
-    RealType CHdistanceo=2.116493107; // Bohr
+    if (Interpolate){
+      RealType CHdistance=std::sqrt( dot(VMCIons.R[1],VMCIons.R[1]) );
+      RealType CHdistanceo=2.116493107; // Bohr
 
-     Psi.updateCoeff(CHdistance-CHdistanceo); // update coefficients after ion move
+      Psi.updateCoeff(CHdistance-CHdistanceo); // update coefficients after ion move
+    }
 }
 
 

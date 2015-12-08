@@ -213,6 +213,8 @@ protected:
   bool ConstPopulation;
   ///true, if this is a restart run
   bool Restart;
+  ///true, if interpolate determinant coeffcients
+  bool Interpolate;
   /** the number of times this QMCDriver is executed
    *
    * MyCounter is initialized to zero by the constructor and is incremented
