@@ -26,13 +26,11 @@ namespace qmcplusplus
 {
 
 void DMCUpdateAllWithIons::updateCoeff(){
-    // update determinant coeffients with ion position
-    // !!! this is the first implementation, hard-code to do CH
+    // update determinant coeffients with ion separation
     if (Interpolate){
       RealType CHdistance=std::sqrt( dot(DMCIons.R[1],DMCIons.R[1]) );
-      RealType CHdistanceo=2.116493107; // Bohr
 
-      Psi.updateCoeff(CHdistance-CHdistanceo); // update coefficients after ion move
+      Psi.updateCoeff(CHdistance); // update coefficients after ion move
     }
 }
 

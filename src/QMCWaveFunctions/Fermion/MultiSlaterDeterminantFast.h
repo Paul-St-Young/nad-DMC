@@ -96,7 +96,7 @@ public:
     Dets[1]->setBF(bf);
   }
 
-  void updateCoeff(RealType RminusRo); // !! hack to interpolate coefficients
+  void updateCoeff(RealType R); // !! hack to interpolate coefficients, R is diatomic separation
 
   ValueType
   evaluate(ParticleSet& P

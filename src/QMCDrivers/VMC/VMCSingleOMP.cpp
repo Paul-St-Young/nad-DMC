@@ -240,6 +240,7 @@ void VMCSingleOMP::resetRun()
         {	  
           os <<"  walker moves with |psi|^2, using VMCUpdateAllWithIons"<<endl;
           os <<"  is this a restart? " << Restart << endl;
+          os <<"  interpolating coefficients? " << Interpolate << endl;
           Movers[ip]=new VMCUpdateAllWithIons(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip],*ions,ionsToBeMoved,Restart,Interpolate);
 	  
 	  SpeciesSet tspecies(ions->getSpeciesSet());

@@ -255,6 +255,8 @@ void DMCOMP::resetUpdateEngines()
 	  
 	  cout << "nuclei contraction is  " << Movers[0]->nucleiCoeff << endl;
 	  cout << "grid spacing is        " << Movers[0]->UniformGrid_h << endl;
+    app_log() <<"  is this a restart? " << Restart << endl;
+    app_log() <<"  interpolating coefficients? " << Interpolate << endl;
 
 
 	}
