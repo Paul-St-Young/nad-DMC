@@ -30,7 +30,7 @@ namespace qmcplusplus
 VMCSingleOMP::VMCSingleOMP(MCWalkerConfiguration& w, TrialWaveFunction& psi, QMCHamiltonian& h,
                            HamiltonianPool& hpool, WaveFunctionPool& ppool):
   QMCDriver(w,psi,h,ppool),  CloneManager(hpool),
-  UseDrift("yes") //, logoffset(2.0), logepsilon(0)
+  UseDrift("yes")
 {
   RootName = "vmc";
   QMCType ="VMCSingleOMP";
@@ -64,13 +64,9 @@ bool VMCSingleOMP::run()
       IndexType updatePeriod=(QMCDriverMode[QMC_UPDATE_MODE])?Period4CheckProperties:0;
       //assign the iterators and resuse them
       MCWalkerConfiguration::iterator wit(W.begin()+wPerNode[ip]), wit_end(W.begin()+wPerNode[ip+1]);
-
       Movers[ip]->startBlock(nSteps);
-
       int now_loc=CurrentStep;
-
       RealType cnorm=1.0/static_cast<RealType>(wPerNode[ip+1]-wPerNode[ip]);
-
       for (int step=0; step<nSteps; ++step)
       {
         //collectables are reset, it is accumulated while advancing walkers
@@ -186,51 +182,21 @@ void VMCSingleOMP::resetRun()
       branchClones[ip] = new BranchEngineType(*branchEngine);
 
 
-      //         if(reweight=="yes")
-      //         {
-      //           if (ip== 0) app_log() << "  WFMCUpdateAllWithReweight"<<endl;
-      //           Movers[ip]=new WFMCUpdateAllWithReweight(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip],weightLength,Eindex);
-      //         }
-      //         else
-      //           if (reweight=="psi")
-      //           {
-      //             os << "  Sampling Psi to increase number of walkers near nodes"<<endl;
-      //             if (QMCDriverMode[QMC_UPDATE_MODE]) Movers[ip]=new VMCUpdatePbyPSamplePsi(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip]);
-      //             else Movers[ip]=new VMCUpdateAllSamplePsi(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip]);
-      //           }
-      //           else
       if (QMCDriverMode[QMC_UPDATE_MODE])
       {
-        //             if (UseDrift == "rn")
-        //             {
-        //               os <<"  PbyP moves with RN, using VMCUpdatePbyPSampleRN"<<endl;
-        //               Movers[ip]=new VMCUpdatePbyPSampleRN(*wClones[ip],*psiClones[ip],*guideClones[ip],*hClones[ip],*Rng[ip]);
-        //               Movers[ip]->setLogEpsilon(logepsilon);
-        //               // Movers[ip]=new VMCUpdatePbyPWithDrift(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip]);
-        //             }
-        //             else
         if (UseDrift == "yes")
         {
           os <<"  PbyP moves with drift, using VMCUpdatePbyPWithDriftFast"<<endl;
           Movers[ip]=new VMCUpdatePbyPWithDriftFast(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip]);
-          // Movers[ip]=new VMCUpdatePbyPWithDrift(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip]);
         }
         else
         {
           os <<"  PbyP moves with |psi^2|, using VMCUpdatePbyP"<<endl;
           Movers[ip]=new VMCUpdatePbyP(*wClones[ip],*psiClones[ip],*hClones[ip],*Rng[ip]);
         }
-        //Movers[ip]->resetRun(branchClones[ip],estimatorClones[ip]);
       }
       else
       {
-        //             if (UseDrift == "rn")
-        //             {
-        //               os <<"  walker moves with RN, using VMCUpdateAllSampleRN"<<endl;
-        //               Movers[ip]=new VMCUpdateAllSampleRN(*wClones[ip],*psiClones[ip],*guideClones[ip],*hClones[ip],*Rng[ip]);
-        //               Movers[ip]->setLogEpsilon(logepsilon);
-        //             }
-        //             else
         if (UseDrift == "yes")
         {
           os <<"  walker moves with drift, using VMCUpdateAllWithDriftFast"<<endl;
@@ -247,7 +213,6 @@ void VMCSingleOMP::resetRun()
 	  int tauFreq_in=tspecies.addAttribute("tauFreq");
 	  int nucleiCoeff_in=tspecies.addAttribute("ionContraction");
 	  int ionGrid_in=tspecies.addAttribute("ionGrid");
-	  //Movers[0]->tauCountFreq.resize(tspecies.size());	   
 	  
 	  int ind=0;
 	  for(int ig=0; ig<tspecies.size(); ++ig){
@@ -260,19 +225,16 @@ void VMCSingleOMP::resetRun()
 	      Movers[0]->UniformGrid_h=inputGrid_h;
 	    
 	    for (int iat=ions->first(ig); iat<ions->last(ig); ++iat){
-	      //Movers[0]->tauCountFreq[ig]=std::max(1,inputFreq);
 	      Movers[0]->tauCountFreq.push_back(std::max(1,inputFreq));
 	      Movers[0]->tauCountFreq[ind]=std::min(nSteps,Movers[0]->tauCountFreq[ind]);
 	      ++ind;
 	    }
-	    //cout << "tauCountFreq for group " << ig << " is " << Movers[0]->tauCountFreq[ind-1] << endl;
 	  }
-	  //cout << "tauCountFreq.size() is " << Movers[0]->tauCountFreq.size() << endl;
 	  for (int iat=0; iat<Movers[0]->tauCountFreq.size(); ++iat)
-	    cout << "tauCountFreq for ion " << iat << " is " << Movers[0]->tauCountFreq[iat] << endl;
+	    app_log() << "tauCountFreq for ion " << iat << " is " << Movers[0]->tauCountFreq[iat] << endl;
 	  
-	  cout << "nuclei contraction is  " << Movers[0]->nucleiCoeff << endl;
-	  cout << "grid spacing is        " << Movers[0]->UniformGrid_h << endl;
+	  app_log() << "nuclei contraction is  " << Movers[0]->nucleiCoeff << endl;
+	  app_log() << "grid spacing is        " << Movers[0]->UniformGrid_h << endl;
 	  
 	  
         }
@@ -309,54 +271,8 @@ void VMCSingleOMP::resetRun()
       Movers[ip]->advanceWalkers(W.begin()+wPerNode[ip],W.begin()+wPerNode[ip+1],true);
     if (nWarmupSteps && QMCDriverMode[QMC_UPDATE_MODE])
       Movers[ip]->updateWalkers(W.begin()+wPerNode[ip],W.begin()+wPerNode[ip+1]);
-//       }
   }
-//     //JNKIM: THIS IS BAD AND WRONG
-//     if (UseDrift == "rn")
-//     {
-//       RealType avg_w(0);
-//       RealType n_w(0);
-// #pragma omp parallel
-//       {
-//         int ip=omp_get_thread_num();
-//         for (int step=0; step<nWarmupSteps; ++step)
-//         {
-//           avg_w=0;
-//           n_w=0;
-//           for (int prestep=0; prestep<myRNWarmupSteps; ++prestep)
-//           {
-//             Movers[ip]->advanceWalkers(W.begin()+wPerNode[ip],W.begin()+wPerNode[ip+1],true);
-//             #pragma omp single
-//             {
-//               MCWalkerConfiguration::iterator wit(W.begin()), wit_end(W.end());
-//               while (wit!=wit_end)
-//               {
-//                 avg_w += (*wit)->Weight;
-//                 n_w +=1;
-//                 wit++;
-//               }
-//             }
-//             #pragma omp barrier
-//            }
-//            #pragma omp single
-//            {
-//              avg_w *= 1.0/n_w;
-//              RealType w_m = avg_w/(1.0-avg_w);
-//              w_m = std::log(0.5+0.5*w_m);
-//              if (std::abs(w_m)>0.01)
-//                logepsilon += w_m;
-//            }
-//            #pragma omp barrier
-//            Movers[ip]->setLogEpsilon(logepsilon);
-//           }
-//
-//         for (int prestep=0; prestep<nWarmupSteps; ++prestep)
-//           Movers[ip]->advanceWalkers(W.begin()+wPerNode[ip],W.begin()+wPerNode[ip+1],true);
-//
-//         if (nWarmupSteps && QMCDriverMode[QMC_UPDATE_MODE])
-//           Movers[ip]->updateWalkers(W.begin()+wPerNode[ip],W.begin()+wPerNode[ip+1]);
-//       }
-//     }
+
   for(int ip=0; ip<NumThreads; ++ip)
     wClones[ip]->clearEnsemble();
   if(nSamplesPerThread)

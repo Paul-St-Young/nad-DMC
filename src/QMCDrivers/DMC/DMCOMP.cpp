@@ -117,30 +117,27 @@ void DMCOMP::resetComponents(xmlNodePtr cur)
       //Movers[0]->tauCountFreq.resize(tspecies.size());	   
       
       int ind=0;
-      for(int ig=0; ig<tspecies.size(); ++ig){
-	int inputFreq = int(tspecies(tauFreq_in,ig));
-	RealType inputAlpha = tspecies(nucleiCoeff_in,ig);
-	RealType inputGrid_h = tspecies(ionGrid_in,ig);
-	if (inputAlpha>0.0)
-	  Movers[0]->nucleiCoeff=inputAlpha;
-	if (inputGrid_h>0.0)
-	  Movers[0]->UniformGrid_h=inputGrid_h;
-	
-	for (int iat=ions->first(ig); iat<ions->last(ig); ++iat){
-	  //Movers[0]->tauCountFreq[ig]=std::max(1,inputFreq);
-	  Movers[0]->tauCountFreq.push_back(std::max(1,inputFreq));
-	  Movers[0]->tauCountFreq[ind]=std::min(nSteps,Movers[0]->tauCountFreq[ind]);
-	      ++ind;
-	}
-	    //cout << "tauCountFreq for group " << ig << " is " << Movers[0]->tauCountFreq[ind-1] << endl;
-      }
-      //cout << "tauCountFreq.size() is " << Movers[0]->tauCountFreq.size() << endl;
+      for(int ig=0; ig<tspecies.size(); ++ig)
+      {
+        int inputFreq = int(tspecies(tauFreq_in,ig));
+        RealType inputAlpha = tspecies(nucleiCoeff_in,ig);
+        RealType inputGrid_h = tspecies(ionGrid_in,ig);
+        if (inputAlpha>0.0)
+          Movers[0]->nucleiCoeff=inputAlpha;
+        if (inputGrid_h>0.0)
+          Movers[0]->UniformGrid_h=inputGrid_h;
+        
+        for (int iat=ions->first(ig); iat<ions->last(ig); ++iat){
+          Movers[0]->tauCountFreq.push_back(std::max(1,inputFreq));
+          Movers[0]->tauCountFreq[ind]=std::min(nSteps,Movers[0]->tauCountFreq[ind]);
+              ++ind;
+        }
+       }
       for (int iat=0; iat<Movers[0]->tauCountFreq.size(); ++iat)
-	cout << "tauCountFreq for ion " << iat << " is " << Movers[0]->tauCountFreq[iat] << endl;
+	      app_log() << "tauCountFreq for ion " << iat << " is " << Movers[0]->tauCountFreq[iat] << endl;
       
-      cout << "nuclei contraction is  " << Movers[0]->nucleiCoeff << endl;
-      cout << "grid spacing is        " << Movers[0]->UniformGrid_h << endl;
-            
+      app_log() << "nuclei contraction is  " << Movers[0]->nucleiCoeff << endl;
+      app_log() << "grid spacing is        " << Movers[0]->UniformGrid_h << endl;
     }
   }
 }
@@ -251,10 +248,10 @@ void DMCOMP::resetUpdateEngines()
 	  }
 	  //cout << "tauCountFreq.size() is " << Movers[0]->tauCountFreq.size() << endl;
 	  for (int iat=0; iat<Movers[0]->tauCountFreq.size(); ++iat)
-	    cout << "tauCountFreq for ion " << iat << " is " << Movers[0]->tauCountFreq[iat] << endl;
+	    app_log() << "tauCountFreq for ion " << iat << " is " << Movers[0]->tauCountFreq[iat] << endl;
 	  
-	  cout << "nuclei contraction is  " << Movers[0]->nucleiCoeff << endl;
-	  cout << "grid spacing is        " << Movers[0]->UniformGrid_h << endl;
+	  app_log() << "nuclei contraction is  " << Movers[0]->nucleiCoeff << endl;
+	  app_log() << "grid spacing is        " << Movers[0]->UniformGrid_h << endl;
     app_log() <<"  is this a restart? " << Restart << endl;
     app_log() <<"  interpolating coefficients? " << Interpolate << endl;
 
