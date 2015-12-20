@@ -97,36 +97,9 @@ void VMCUpdateAllWithIons::updateCoeff(){
 
 void VMCUpdateAllWithIons::dorotateshift(PosType& origin, PosType &second, RealType &getpsi )
 {
-  PosType neworigin, newsec,displ,testsec;
-  neworigin = origin-origin;
-  newsec = origin - origin;  //zero out newsec
-  displ = second - origin;
-  RealType odist= std::sqrt(displ[0]*displ[0]+displ[1]*displ[1]+displ[2]*displ[2]);
-  newsec[2] = odist;  //align sec along z direction 
-  //Now we have two new positions of ions neworigin and new sec
-
-  //Rotate electrons
-  W.makeShiftRotate(deltaR,origin,second);
-  VMCIons.R[ion_index[0]] = neworigin;
-  VMCIons.R[ion_index[1]] = newsec;
-  VMCIons.update();
-  updateCoeff();
-  H.update_source(VMCIons);
-  W.update();
-
   ///Calculate wavefunction
   RealType logpsi(Psi.evaluateLog(W));
   getpsi = logpsi;  
-
-  ///Rotate back electrons
-  W.invmakeShiftRotate(deltaR,origin,second);
-  ///Put back initial ion 
-  VMCIons.R[ion_index[0]] = origin;
-  VMCIons.R[ion_index[1]] = second;
-  VMCIons.update();
-  updateCoeff();
-  H.update_source(VMCIons);
-  W.update();
   return ;
 }
 
@@ -183,7 +156,7 @@ void VMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end, 
       if(tauCountFreq[ion_index[i]]>1 && tauCount%tauCountFreq[ion_index[i]]) continue;	  
       RealType tau_eff=(RealType)tauCountFreq[ion_index[i]]*Tau;	
       //ntdeubg delete me (the factor 2)
-      ionR[i]=ionR[i]+std::sqrt(tau_eff/VMCIons.Mass[ion_index[i]])*deltaR[i];
+      if (i==ION0) ionR[i]=ionR[i]+std::sqrt(tau_eff/VMCIons.Mass[ion_index[i]])*deltaR[i];
 
       VMCIons.R[ion_index[i]] = ionR[i];
     }    

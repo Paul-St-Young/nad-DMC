@@ -73,37 +73,9 @@ DMCUpdateAllWithIons::~DMCUpdateAllWithIons() { }
 
 void DMCUpdateAllWithIons::dorotateshift(PosType& origin, PosType &second, RealType &getpsi )
 {
-  PosType neworigin, newsec,displ,testsec;
-  neworigin = origin-origin;
-  newsec = origin - origin;  //zero out newsec
-  displ = second - origin;
-  RealType odist= std::sqrt(displ[0]*displ[0]+displ[1]*displ[1]+displ[2]*displ[2]);
-  newsec[2] = odist;  //align sec along z direction 
-  //Now we have two new positions of ions neworigin and new sec
-  //Rotate electrons
-  W.makeShiftRotate(deltaR,origin,second);
-  DMCIons.R[ion_index[0]] = neworigin;
-  DMCIons.R[ion_index[1]] = newsec;
-  DMCIons.update();
-  updateCoeff();
-  H.update_source(DMCIons);
-  W.update();
-  
   //Calculate wavefunction
   RealType logpsi(Psi.evaluateLog(W));
   getpsi = logpsi;  
-  
-  //Rotate back electrons
-  W.invmakeShiftRotate(deltaR,origin,second);
-  //Rotate gradient vector, noshift
-  W.gradRotate(deltaR,origin,second);
-  //Put back initial ion 
-  DMCIons.R[ion_index[0]] = origin;
-  DMCIons.R[ion_index[1]] = second;
-  DMCIons.update();
-  updateCoeff();
-  H.update_source(DMCIons);
-  W.update();
  return ;
 }
 
@@ -216,11 +188,11 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
     // move ions
     RealType ilogGf=0.0;
     for (int i=0;i<thisWalker.ionPos.size();++i)
-    {
+    { if (i==ION0) {
       RealType tau_eff=Tau;
       ilogGf += -0.5*dot(deltaR[i],deltaR[i]);
       ionR[i]=ionR[i]+std::sqrt(Tau/DMCIons.Mass[ion_index[i]])*deltaR[i] + ionsDrift[i];
-    }
+    } }
 
     makeGaussRandomWithEngine(deltaR,RandomGen);
 
@@ -318,7 +290,7 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
             DMCIons.Mass[ion_index[j]],ion_index[j],DMCIons.R);
         RealType tau_eff=Tau;
 
-        ionsDrift[j] = ionDrift(wfs,h,f,tau_eff/DMCIons.Mass[ion_index[j]]/2.0)
+        if (j==ION0) ionsDrift[j] = ionDrift(wfs,h,f,tau_eff/DMCIons.Mass[ion_index[j]]/2.0)
           +nuclei_wfs_gradient(DMCIons.R,ion_index[j])*tau_eff/DMCIons.Mass[ion_index[j]];
         
       }
@@ -340,13 +312,12 @@ void DMCUpdateAllWithIons::advanceWalkers(WalkerIter_t it, WalkerIter_t it_end,
     RealType ilogGb=0.0;
     PosType r_temp[thisWalker.ionPos.size()];
     for (int i=0;i<thisWalker.ionPos.size();++i)
-    {
+    { if (i==ION0) {
       RealType tau_eff=Tau;
-
       for (int j=0;j<3;++j)
         r_temp[i][j]=ionRorig[i][j]-ionR[i][j]-ionsDrift[i][j];
       ilogGb += -dot(r_temp[i],r_temp[i])/2.0/tau_eff*DMCIons.Mass[ion_index[i]];
-    }
+    } }
     RealType logGb=logBackwardGF(deltaR)+ilogGb;
     RealType prob= std::min(g2*std::exp(logGb-logGf +2.0*(logpsi-thisWalker.Properties(LOGPSI))),1.0);
     deltaR = W.R-thisWalker.R;
