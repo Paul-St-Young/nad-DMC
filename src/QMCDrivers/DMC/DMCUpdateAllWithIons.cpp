@@ -43,6 +43,32 @@ DMCUpdateAllWithIons::DMCUpdateAllWithIons(MCWalkerConfiguration& w,
 
   UpdatePbyP=false;
 
+  MCWalkerConfiguration::iterator
+    wit(w.begin()), wit_end(w.end());
+  for(; wit != wit_end; ++wit)
+  {
+    Walker_t& thisWalker(**wit);
+    Walker_t::Buffer_t& w_buffer(thisWalker.DataSet);
+    W.loadWalker(thisWalker,true);
+
+    // initialize ion positions
+    ionRo.resize(DMCIons.R.size());
+    for (int i=0;i<DMCIons.R.size();++i)
+    {
+      if (DMCIons.Mass[i]>0.0)
+      {
+        if ( Restart ) // this implies W.ionPos is filled by restart
+          DMCIons.R[i]=W.ionPos[i];
+        else  // initialize ion position in walker using info from inputfile
+          W.ionPos[i]=DMCIons.R[i];
+        // end if Restart
+        thisWalker.ionPos[i]=DMCIons.R[i];
+        ionRo[i] = DMCIons.R[i];
+      }
+    }
+    W.saveWalker(thisWalker);
+  }
+
   // recording distances between ions that have mass
   for (int i=0;i<ionsToMove.size();++i)
     ion_index.push_back(ionsToMove[i]);
@@ -65,6 +91,7 @@ DMCUpdateAllWithIons::DMCUpdateAllWithIons(MCWalkerConfiguration& w,
       ++jj;
     }
   }
+
 
 }
 

@@ -36,24 +36,28 @@ VMCUpdateAllWithIons::VMCUpdateAllWithIons(MCWalkerConfiguration& w, TrialWaveFu
   // the ions to be moved (i.e. mass>0) need to be introduced first the ions ParticleSet
   // at the moment
   for(; wit != wit_end; ++wit)
+  {
+    Walker_t& thisWalker(**wit);
+    Walker_t::Buffer_t& w_buffer(thisWalker.DataSet);
+    W.loadWalker(thisWalker,true);
+
+    // initialize ion positions
+    ionRo.resize(thisWalker.ionPos.size());
+    for (int i=0;i<VMCIons.R.size();++i)
     {
-      Walker_t& thisWalker(**wit);
-      Walker_t::Buffer_t& w_buffer(thisWalker.DataSet);
-      W.loadWalker(thisWalker,true);
-      for (int i=0;i<VMCIons.R.size();++i)
-	{
-	  if (VMCIons.Mass[i]>0.0) 
-	    {
-            if ( Restart ) // this implies W.ionPos is filled by restart
-                VMCIons.R[i]=W.ionPos[i];
-            else  // initialize ion position in walker using info from inputfile
-                W.ionPos[i]=VMCIons.R[i];
-            // end if Restart
-            thisWalker.ionPos[i]=VMCIons.R[i];
-	    }
-	}
-      W.saveWalker(thisWalker);
+      if (VMCIons.Mass[i]>0.0) 
+      {
+        if ( Restart ) // this implies W.ionPos is filled by restart
+          VMCIons.R[i]=W.ionPos[i];
+        else  // initialize ion position in walker using info from inputfile
+          W.ionPos[i]=VMCIons.R[i];
+        // end if Restart
+        thisWalker.ionPos[i]=VMCIons.R[i];
+        ionRo[i] = VMCIons.R[i];
+      }
     }
+    W.saveWalker(thisWalker);
+  }
 
   for (int i=0;i<ionsToMove.size();++i)
     ion_index.push_back(ionsToMove[i]);
@@ -78,6 +82,8 @@ VMCUpdateAllWithIons::VMCUpdateAllWithIons(MCWalkerConfiguration& w, TrialWaveFu
       ++jj;
     }
   }
+
+
 }
 
 VMCUpdateAllWithIons::~VMCUpdateAllWithIons()

@@ -81,6 +81,7 @@ public:
 
   vector<RealType> nuclei_dist_step;
   vector<RealType> ion_rc;
+  ParticleSet::ParticlePos_t ionRo;
 
   RealType UniformGrid_h;
   RealType nucleiCoeff;
@@ -251,12 +252,11 @@ public:
     return std::exp(-dr2);
   }
 
-  inline RealType nuclei_wfs(PosType ionR[],int ionRsize)
+  inline RealType nuclei_wfs(ParticleSet::ParticlePos_t ionR)
   {
     RealType n_wfs = 1.0;
-    int jj=0;
-    for (int i=0;i<ionRsize;++i){ if (i==ION0) {
-	    n_wfs *= directionalGaussian(ionR[i],ionRo[j],i);
+    for (int i=0;i<ionR.size();++i){ if (i==ION0) {
+	    n_wfs *= directionalGaussian(ionR[i],ionRo[i],i);
     } }
 
     return n_wfs;

@@ -109,11 +109,15 @@ void DMCOMP::resetComponents(xmlNodePtr cur)
       Movers[ip]->resetRun(branchClones[ip],estimatorClones[ip]);
       Movers[ip]->initWalkers(W.begin()+wPerNode[ip],W.begin()+wPerNode[ip+1]);
 
+
       
       SpeciesSet tspecies(ions->getSpeciesSet());
       int tauFreq_in=tspecies.addAttribute("tauFreq");
       int nucleiCoeff_in=tspecies.addAttribute("ionContraction");
       int ionGrid_in=tspecies.addAttribute("ionGrid");
+      int ionCoeffx_in=tspecies.addAttribute("ionx");
+      int ionCoeffy_in=tspecies.addAttribute("iony");
+      int ionCoeffz_in=tspecies.addAttribute("ionz"); 
       //Movers[0]->tauCountFreq.resize(tspecies.size());	   
       
       int ind=0;
@@ -126,11 +130,18 @@ void DMCOMP::resetComponents(xmlNodePtr cur)
           Movers[0]->nucleiCoeff=inputAlpha;
         if (inputGrid_h>0.0)
           Movers[0]->UniformGrid_h=inputGrid_h;
+
+        RealType inputx = tspecies(ionCoeffx_in,ig);
+        RealType inputy = tspecies(ionCoeffy_in,ig);
+        RealType inputz = tspecies(ionCoeffz_in,ig);
+        RealType ionxyz[] = {inputx,inputy,inputz};
+        vector<RealType> ionCoeffVec(ionxyz,ionxyz+3);
         
         for (int iat=ions->first(ig); iat<ions->last(ig); ++iat){
           Movers[0]->tauCountFreq.push_back(std::max(1,inputFreq));
           Movers[0]->tauCountFreq[ind]=std::min(nSteps,Movers[0]->tauCountFreq[ind]);
-              ++ind;
+          Movers[0]->ionCoeff.push_back( ionCoeffVec );
+          ++ind;
         }
        }
       for (int iat=0; iat<Movers[0]->tauCountFreq.size(); ++iat)
@@ -226,6 +237,9 @@ void DMCOMP::resetUpdateEngines()
 	  int tauFreq_in=tspecies.addAttribute("tauFreq");
 	  int nucleiCoeff_in=tspecies.addAttribute("ionContraction");
 	  int ionGrid_in=tspecies.addAttribute("ionGrid");
+    int ionCoeffx_in=tspecies.addAttribute("ionx");
+    int ionCoeffy_in=tspecies.addAttribute("iony");
+    int ionCoeffz_in=tspecies.addAttribute("ionz");
 	  //Movers[0]->tauCountFreq.resize(tspecies.size());	   
 	  
 	  int ind=0;
@@ -237,15 +251,27 @@ void DMCOMP::resetUpdateEngines()
 	      Movers[0]->nucleiCoeff=inputAlpha;
 	    if (inputGrid_h>0.0)
 	      Movers[0]->UniformGrid_h=inputGrid_h;
+     
+      RealType inputx = tspecies(ionCoeffx_in,ig);
+      RealType inputy = tspecies(ionCoeffy_in,ig);
+      RealType inputz = tspecies(ionCoeffz_in,ig);
+      RealType ionxyz[] = {inputx,inputy,inputz};
+      vector<RealType> ionCoeffVec(ionxyz,ionxyz+3);
 	    
 	    for (int iat=ions->first(ig); iat<ions->last(ig); ++iat){
 	      //Movers[0]->tauCountFreq[ig]=std::max(1,inputFreq);
 	      Movers[0]->tauCountFreq.push_back(std::max(1,inputFreq));
 	      Movers[0]->tauCountFreq[ind]=std::min(nSteps,Movers[0]->tauCountFreq[ind]);
+        Movers[0]->ionCoeff.push_back( ionCoeffVec );
 	      ++ind;
 	    }
 	    //cout << "tauCountFreq for group " << ig << " is " << Movers[0]->tauCountFreq[ind-1] << endl;
 	  }
+    // report inputs
+    app_log() << "  Using single Gaussian on ION0=" << ION0 << " with ionxyz=";
+    for (int coord=0;coord<3;coord++)
+      app_log() << Movers[0]->ionCoeff[ION0][coord] << " ";
+    app_log() << endl;
 	  //cout << "tauCountFreq.size() is " << Movers[0]->tauCountFreq.size() << endl;
 	  for (int iat=0; iat<Movers[0]->tauCountFreq.size(); ++iat)
 	    app_log() << "tauCountFreq for ion " << iat << " is " << Movers[0]->tauCountFreq[iat] << endl;

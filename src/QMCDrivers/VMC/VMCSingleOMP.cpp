@@ -213,6 +213,9 @@ void VMCSingleOMP::resetRun()
 	  int tauFreq_in=tspecies.addAttribute("tauFreq");
 	  int nucleiCoeff_in=tspecies.addAttribute("ionContraction");
 	  int ionGrid_in=tspecies.addAttribute("ionGrid");
+    int ionCoeffx_in=tspecies.addAttribute("ionx");
+    int ionCoeffy_in=tspecies.addAttribute("iony");
+    int ionCoeffz_in=tspecies.addAttribute("ionz");
 	  
 	  int ind=0;
 	  for(int ig=0; ig<tspecies.size(); ++ig){
@@ -223,13 +226,25 @@ void VMCSingleOMP::resetRun()
 	      Movers[0]->nucleiCoeff=inputAlpha;
 	    if (inputGrid_h>0.0)
 	      Movers[0]->UniformGrid_h=inputGrid_h;
+      RealType inputx = tspecies(ionCoeffx_in,ig);
+      RealType inputy = tspecies(ionCoeffy_in,ig); 
+      RealType inputz = tspecies(ionCoeffz_in,ig);
+      RealType ionxyz[] = {inputx,inputy,inputz};
+      vector<RealType> ionCoeffVec(ionxyz,ionxyz+3); 
 	    
 	    for (int iat=ions->first(ig); iat<ions->last(ig); ++iat){
 	      Movers[0]->tauCountFreq.push_back(std::max(1,inputFreq));
 	      Movers[0]->tauCountFreq[ind]=std::min(nSteps,Movers[0]->tauCountFreq[ind]);
+        Movers[0]->ionCoeff.push_back( ionCoeffVec );
 	      ++ind;
 	    }
 	  }
+    // report inputs
+    app_log() << "  Using directional Gaussian on ION0=" << ION0 << " with ionxyz=";
+    for (int coord=0;coord<3;coord++) {
+      app_log() << Movers[0]->ionCoeff[ION0][coord] << " ";
+    } app_log() << endl;
+    
 	  for (int iat=0; iat<Movers[0]->tauCountFreq.size(); ++iat)
 	    app_log() << "tauCountFreq for ion " << iat << " is " << Movers[0]->tauCountFreq[iat] << endl;
 	  
