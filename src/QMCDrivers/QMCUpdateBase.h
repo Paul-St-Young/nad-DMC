@@ -76,6 +76,8 @@ public:
   int nStepsPerBlock;
   // Frequency of all particles is equal to one
   //bool FrequencyEqOne;
+  // a list of coefficients for each ion to customize the ion wave function
+  vector< vector<RealType> > ionCoeff;
 
   vector<RealType> nuclei_dist_step;
   vector<RealType> ion_rc;
@@ -225,11 +227,10 @@ public:
       mixTerm += d1[i]*d2[i];
     mixTerm = mixTerm*2.0/f1div;
 
-    return -(GridLaplacianArray(wfs1,f1,h)/f1div+nuclei_wfs_laplacian2(ionR,particle,d2)+mixTerm)/2.0/ion_mass;    
+    return -(GridLaplacianArray(wfs1,f1,h)/f1div+nuclei_wfs_laplacian(ionR,particle)+mixTerm)/2.0/ion_mass;    
   }
 
-
-  inline RealType testGaussian(PosType ion1, PosType ion2, RealType coeff, RealType rc)
+  /*inline RealType pairGaussian(PosType ion1, PosType ion2, RealType coeff, RealType rc)
   {
     RealType dr = 0.0;
     for (int i=0;i<3;++i)
@@ -238,158 +239,52 @@ public:
     dr = std::sqrt(dr);
 
     return std::exp(-(dr-rc)*(dr-rc)*coeff);
-  }
+  } */
 
+  inline RealType directionalGaussian(PosType ion1, PosType iono, int particle)
+  { // directional Gaussian around initial ion position
+    //  ion1 and iono better be the current and orginal positions of particle
+    RealType dr2 = 0.0;
+    for (int coord=0;coord<3;coord++){
+      dr2 += ionCoeff[particle][coord] * (ion1[coord]-iono[coord])*(ion1[coord]-iono[coord]);
+    }
+    return std::exp(-dr2);
+  }
 
   inline RealType nuclei_wfs(PosType ionR[],int ionRsize)
   {
     RealType n_wfs = 1.0;
-    RealType coeff=nucleiCoeff;
     int jj=0;
-    for (int i=0;i<ionRsize;++i){
-      for (int j=i+1;j<ionRsize;++j){
-	n_wfs = n_wfs*testGaussian(ionR[i],ionR[j],coeff,ion_rc[jj]);
-	++jj;
-      }
-    }
+    for (int i=0;i<ionRsize;++i){ if (i==ION0) {
+	    n_wfs *= directionalGaussian(ionR[i],ionRo[j],i);
+    } }
 
     return n_wfs;
-    
   }
-  
-  inline RealType nuclei_wfs(ParticleSet::ParticlePos_t ionR)
-  {
-    RealType n_wfs = 1.0;
-    RealType coeff=nucleiCoeff;
-    int jj=0;
-    for (int i=0;i<ionR.size();++i){
-      for (int j=i+1;j<ionR.size();++j){
-	n_wfs = n_wfs*testGaussian(ionR[i],ionR[j],coeff,ion_rc[jj]);
-	++jj;
-      }
-    }
-
-    return n_wfs;
-    
-  }
-
-  
-  inline int get_wfs_index(int ion1, int ion2, int ionsSize)
-  {
-    // this should be stored in a table
-    int value_out=-1;
-    int jj=0;
-    for (int i=0;i<ionsSize;++i){
-      for (int j=i+1;j<ionsSize;++j){
-	if (ion1==i && ion2==j)
-	  return jj;
-	if (ion1==j && ion2==i)
-	  return jj;
-	++jj;
-      }
-    }
-    
-    return value_out;    
-  }
-
-
   
   inline PosType nuclei_wfs_gradient(ParticleSet::ParticlePos_t ionR, int particle)
   {
     PosType dr(0.0);
     RealType dist;
-    RealType coeff=nucleiCoeff;
-    int ionsSize = ionR.size();
-    int i=particle;
-    for (int j=0;j<ionsSize;++j){      
-      if (j != i ){
-	dist = 0.0;
-	for (int k=0;k<3;++k)
-	  dist += (ionR[i][k]-ionR[j][k])*(ionR[i][k]-ionR[j][k]);
-	dist = std::sqrt(dist);
-	
-	int jj=get_wfs_index(i,j,ionsSize);//should be stored in an array
-	RealType aa=-2.0*coeff*(dist-ion_rc[jj])/dist;
-	for (int k=0;k<3;++k)
-	  dr[k]=dr[k]+aa*(ionR[i][k]-ionR[j][k]);
-      }
+
+    for (int i=0;i<3;i++){
+      dr[i] = -2*ionCoeff[particle][i]*(ionR[particle][i]-ionRo[particle][i]);
     }
-    
-    return dr;    
+
+    return dr;
   }
 
   inline RealType nuclei_wfs_laplacian(ParticleSet::ParticlePos_t ionR, int particle)
   {
     PosType dr(0.0);
-    RealType dr2(0.0);
-    RealType coeff=nucleiCoeff;
-    PosType particle_grad=nuclei_wfs_gradient(ionR,particle);    
-    RealType dist;
-    RealType value_out(0.0);
-    int ionsSize = ionR.size();
-    int i=particle;
-    for (int j=0;j<ionsSize;++j){      
-      if (j != i ){
-	dist = 0.0;
-	for (int k=0;k<3;++k)
-	  dist += (ionR[i][k]-ionR[j][k])*(ionR[i][k]-ionR[j][k]);
-	dist = std::sqrt(dist);
-	
-	int jj=get_wfs_index(i,j,ionsSize);//should be stored in an array
-	RealType aa=-2.0*coeff*(dist-ion_rc[jj])/dist;
-	RealType bb=-2.0*coeff*(1.0/dist-(dist-ion_rc[jj])/dist/dist)/dist;
-	dr2 = 0.0;
-	for (int k=0;k<3;++k){
-	  dr[k]=aa*(ionR[i][k]-ionR[j][k]);
-	  dr2 += dr[k]*dr[k]+aa+bb*(ionR[i][k]-ionR[j][k])*(ionR[i][k]-ionR[j][k]);
-	}
-	value_out += dr2 + dot(dr,particle_grad) - dot(dr,dr);
-      }
+    RealType lap=0.0;
+    for (int i=0;i<3;i++){
+        RealType coeff = ionCoeff[particle][i];
+        lap += -2*coeff+4*coeff*coeff*(ionR[particle][i]-ionRo[particle][i])*(ionR[particle][i]-ionRo[particle][i]);
     }
-    
-    return value_out;    
-  }
-
-  inline RealType nuclei_wfs_laplacian2(ParticleSet::ParticlePos_t ionR, int particle, PosType particle_grad)
-  {
-    PosType dr(0.0);
-    RealType dr2(0.0);
-    RealType coeff=nucleiCoeff;
-    //PosType particle_grad=nuclei_wfs_gradient(ionR,particle);    
-    RealType dist;
-    RealType value_out(0.0);
-    int ionsSize = ionR.size();
-    int i=particle;
-    for (int j=0;j<ionsSize;++j){      
-      if (j != i ){
-	dist = 0.0;
-	for (int k=0;k<3;++k)
-	  dist += (ionR[i][k]-ionR[j][k])*(ionR[i][k]-ionR[j][k]);
-	dist = std::sqrt(dist);
-	
-	int jj=get_wfs_index(i,j,ionsSize);//should be stored in an array
-	RealType aa=-2.0*coeff*(dist-ion_rc[jj])/dist;
-	RealType bb=-2.0*coeff*(1.0/dist-(dist-ion_rc[jj])/dist/dist)/dist;
-	dr2 = 0.0;
-	for (int k=0;k<3;++k){
-	  dr[k]=aa*(ionR[i][k]-ionR[j][k]);
-	  dr2 += dr[k]*dr[k]+aa+bb*(ionR[i][k]-ionR[j][k])*(ionR[i][k]-ionR[j][k]);
-	}
-	value_out += dr2 + dot(dr,particle_grad) - dot(dr,dr);
-      }
-    }
-    
-    return value_out;    
+    return lap;
   }
   
-  
-
-  
-
-
-  
-
-
   inline RealType GridLaplacianArray(RealType wfs[][2], RealType f,RealType h, int dim=3)
   {
     
