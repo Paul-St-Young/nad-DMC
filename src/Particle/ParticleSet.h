@@ -16,7 +16,7 @@
 #ifndef QMCPLUSPLUS_PARTICLESET_H
 #define QMCPLUSPLUS_PARTICLESET_H
 
-#define ION0 1 // !!!! specific hack to move only ion 1
+#define ION0 0 // !!!! specific hack to move only ion 0
 
 #include <Configuration.h>
 #include <Particle/Walker.h>
